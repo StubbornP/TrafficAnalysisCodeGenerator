@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<root>
+
+    <!-- <Built-inSpecify/> -->
+    <Init/>
+    <Container>
+    	<Option id = "TCP_option" expression= "{{headerlength}}>5">
+	        <Switch id ="id2">
+	            <Field id = "MSS_length" type = "byte"/>
+	            <Field id = "MSS_data" type = "ushort"/>
+	        </Switch>
+	        <Switch id ="id3">
+	            <Field id = "shift_length" type = "byte"/>
+	            <Field id = "shift_count" type = "byte"/>
+	        </Switch>
+	        <Switch id ="id4">
+	            <Field id = "SACK_length" type = "byte"/>
+	        </Switch>    
+	        <BlockArray id = "tcp_options" size = "({{headerlength}}-5)*4">
+	            <Field id = "kind" type = "byte" reg = "kind"/>
+	            <Break expression ="{{kind}}==0"/>
+	            <Switch ref="id2" expression ="{{kind}}==2"/>
+	            <Switch ref="id3" expression ="{{kind}}==3"/>
+	            <Switch ref="id4" expression ="{{kind}}==4"/>
+	        </BlockArray>
+	        <Parse>
+	            <BlockArray ref = "tcp_options"/>
+	        </Parse>
+	    </Option>
+
+    </Container>
+    <Protocol id ="test_xml">
+    	<IP4 id = "test_ip4"/>
+    	<IP6 id = "test_ip6"/>
+    	<Mac id = "test_mac"/>
+
+    	<Bytes id = "test_bytes" length = "10"/>
+	    <Field id = "Source_Port" type = "ushort"/>
+	    <Field id = "Destination_Port"  type="ushort"/>
+	    <Field id = "Sequence_Number" type="uint"/>
+	    <Field id = "Acknowledgement_Number" type="uint"/>
+	    <Field id= "Data_offset" type = "byte" bits="0:4" reg="headerlength" cursor="0"/>
+
+	    <Field id = "Reserved" type="byte" bits="4:7" cursor = "0"/>
+	    <Field id = "NS" type = "byte" bits = "7:8" />
+	    <Field id = "CWR" type = "flag" bits = "0:1" cursor = "0"/>
+	    <Field id = "ECE" type = "flag" bits = "1:2" cursor = "0"/>
+	    <Field id = "URG" type = "flag" bits = "2:3" cursor = "0" reg = "flag_URG"/>
+	    <Field id = "ACK" type = "flag" bits = "3:4" cursor = "0"/>
+	    <Field id = "PSH" type = "flag" bits = "4:5" cursor = "0"/>
+	    <Field id = "RST" type = "flag" bits = "5:6" cursor = "0"/>
+	    <Field id = "SYN" type = "flag" bits = "6:7" cursor = "0"/>
+	    <Field id = "FIN" type = "flag" bits = "7:8"/>
+	    <Field id = "Window_Size" type= "ushort"/>
+	    <Field id = "Checksum" type = "ushort"/>
+	    <Field id = "urgent_ptr" type = "ushort"/>
+	    <Option ref = "TCP_option"/>
+	</Protocol>
+<!--     <ParseFinishedHOOK/>
+    <Deinit/> -->
+</root>
